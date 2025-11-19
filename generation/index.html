@@ -60,22 +60,49 @@
       items.forEach(b => {
         const card = document.createElement('article');
         card.className = 'card';
-        card.innerHTML = `
-          <img data-src="b.image"alt="{b.image}" alt="b.image"alt="{b.name}" class="lazy" />
-          <div class="card-body">
-            <h2>${b.name}</h2>
-            <p class="meta">b.year•{b.year} •b.year•{b.architect} • ${b.style}</p>
-            <p class="excerpt">b.description.substring(0,120){b.description.substring(0,120)}b.description.substring(0,120){b.description.length>120?'...':''}</p>
-            <button class="view" data-id="${b.id}">詳細</button>
-          </div>
-        `;
+
+        // 圖片（lazy load 使用 data-src）
+        const img = document.createElement('img');
+        img.className = 'lazy';
+        img.alt = b.name || '';
+        img.dataset.src = b.image || ''; // 寫入 data-src 讓 lazy loader 取用
+        img.style.background = '#eee';
+
+        // 內容區
+        const body = document.createElement('div');
+        body.className = 'card-body';
+
+        const h2 = document.createElement('h2');
+        h2.textContent = b.name || '';
+
+        const meta = document.createElement('p');
+        meta.className = 'meta';
+        meta.textContent = `${b.year || ''} • ${b.architect || ''} • ${b.style || ''}`;
+        const excerpt = document.createElement('p');
+        excerpt.className = 'excerpt';
+        const desc = b.description || '';
+        excerpt.textContent = desc.length > 120 ? desc.substring(0,120) + '...' : desc;
+
+        const btn = document.createElement('button');
+        btn.className = 'view';
+        btn.textContent = '詳細';
+        btn.dataset.id = b.id;
+        btn.addEventListener('click', () => showDetailById(Number(btn.dataset.id)));
+
+        // 組合 card
+        body.appendChild(h2);
+        body.appendChild(meta);
+        body.appendChild(excerpt);
+        body.appendChild(btn);
+        card.appendChild(img);
+        card.appendChild(body);
         g.appendChild(card);
       });
+
+      // 啟動 lazy load
       initLazyLoad();
-      document.querySelectorAll('.view').forEach(btn => {
-        btn.addEventListener('click', () => showDetailById(Number(btn.dataset.id)));
-      });
     }
+
 
     function initLazyLoad() {
       const imgs = document.querySelectorAll('img.lazy');
@@ -100,12 +127,36 @@
       const detail = document.getElementById('detail');
       detail.classList.remove('hidden');
       const c = document.getElementById('detail-content');
-      c.innerHTML = `
-        <h2>${b.name}</h2>
-        <p class="meta">b.year•{b.year} •b.year•{b.architect} • ${b.style}</p>
-        <img src="b.image"alt="{b.image}" alt="b.image"alt="{b.name}" />
-        <p class="full">${b.description}</p>
-      `;
+
+      // 清空舊內容
+      c.innerHTML = '';
+
+      // 標題
+      const title = document.createElement('h2');
+      title.textContent = b.name || '';
+
+      // meta
+      const meta = document.createElement('p');
+      meta.className = 'meta';
+      meta.textContent = `${b.year || ''} • ${b.architect || ''} • ${b.style || ''}`;
+
+      // 圖片
+      const img = document.createElement('img');
+      img.src = b.image || '';
+      img.alt = b.name || '';
+
+      // 全文描述
+      const para = document.createElement('p');
+      para.className = 'full';
+      para.textContent = b.description || '';
+
+      // 插入 DOM
+      c.appendChild(title);
+      c.appendChild(meta);
+      c.appendChild(img);
+      c.appendChild(para);
+
+      // 捲動到頂端
       window.scrollTo(0,0);
     }
 
