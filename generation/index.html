@@ -80,7 +80,7 @@
         meta.textContent = `${b.year || ''} • ${b.architect || ''} • ${b.style || ''}`;
         const excerpt = document.createElement('p');
         excerpt.className = 'excerpt';
-        const desc = b.description || '';
+        const desc = b.description_short || '';
         excerpt.textContent = desc.length > 120 ? desc.substring(0,120) + '...' : desc;
 
         const btn = document.createElement('button');
@@ -148,7 +148,7 @@
       // 全文描述
       const para = document.createElement('p');
       para.className = 'full';
-      para.textContent = b.description || '';
+      para.textContent = b.description_long || '';
 
       // 插入 DOM
       c.appendChild(title);
@@ -178,7 +178,7 @@
       const q = document.getElementById('search').value.trim().toLowerCase();
       const style = document.getElementById('filter-style').value;
       const results = buildings.filter(b => {
-        const matchQ = !q || (b.name + ' ' + b.description + ' ' + b.architect + ' ' + b.year).toLowerCase().includes(q);
+        const matchQ = !q || (b.name + ' ' + ' ' + b.description_short + ' ' + b.description_long + ' ' + b.architect + ' ' + b.year).toLowerCase().includes(q);
         const matchStyle = !style || b.style === style;
         return matchQ && matchStyle;
       });
