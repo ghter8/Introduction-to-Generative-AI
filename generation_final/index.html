@@ -19,6 +19,7 @@
   </header>
 
   <main>
+    <div id="notice" class="notice hidden"></div>
     <section id="gallery" class="grid"></section>
 
     <section id="detail" class="detail hidden">
@@ -35,12 +36,20 @@
     let buildings = [];
 
     async function loadData() {
-      const res = await fetch('data/buildings.json');
-      buildings = await res.json();
-      populateStyleFilter();
-      renderList(buildings);
-      const hash = location.hash.slice(1);
-      if (hash) showDetailById(Number(hash));
+      try {
+        const res = await fetch('data/buildings.json');
+        if (!res.ok) throw new Error('資料載入失敗');
+        buildings = await res.json();
+        populateStyleFilter();
+        renderList(buildings);
+        const hash = location.hash.slice(1);
+        if (hash) showDetailById(Number(hash));
+      } catch (err) {
+        console.error('載入資料時發生錯誤：', err);
+        const notice = document.getElementById('notice');
+        notice.textContent = '無法載入資料。請使用 HTTP 伺服器來開啟此頁（例如：在專案資料夾執行 `py -m http.server 8000`），或將資料直接嵌入頁面。';
+        notice.classList.remove('hidden');
+      }
     }
 
     function populateStyleFilter() {
